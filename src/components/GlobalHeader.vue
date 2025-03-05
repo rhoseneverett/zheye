@@ -23,7 +23,7 @@ const logout = () => {
 
 <template>
   <nav class="navbar navbar-dark bg-primary justify-content-between mb-4 px-4">
-    <a href="#" class="navbar-brand">者也专栏</a>
+    <RouterLink to="/" class="navbar-brand">者也专栏</RouterLink>
     <ul v-if="!user.isLogin" class="list-inline mb-0">
       <li class="list-inline-item">
         <RouterLink to="/login" class="btn btn-outline-light my-2">登陆</RouterLink>
@@ -38,8 +38,10 @@ const logout = () => {
           <RouterLink to="/create" class="dropdown-item">新建文章</RouterLink>
         </DropdownItem>
         <DropdownItem><a href="" class="dropdown-item">编辑资料</a></DropdownItem>
+        <DropdownItem>
+          <RouterLink :to="`/column/${user.column}`" class="dropdown-item">我的专栏</RouterLink>
+        </DropdownItem>
         <DropdownItem><a href="#" class="dropdown-item" @click.prevent="logout">退出登陆</a></DropdownItem>
-        <!-- <dropdown-item><a href="#" class="dropdown-item" @click.prevent="handleLogout">退出登陆</a></dropdown-item> -->
       </Dropdown>
     </ul>
   </nav>

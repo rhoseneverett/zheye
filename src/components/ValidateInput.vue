@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue';
+import { computed, onMounted, reactive } from 'vue';
 import type { RuleProps } from '@/store';
 import { eventBus } from '@/mitt';
 
@@ -28,14 +28,14 @@ const emit = defineEmits<{
   (e: 'update:modelValue', targetValue: string): void
 }>()
 
-const updateValue = (e: Event) => {
-  const targetValue = (e.target as HTMLInputElement).value
-  inputRef.val = targetValue
-  emit('update:modelValue', targetValue)
-}
-
 const inputRef = reactive({
-  val: props.modelValue || '',
+  //computed:getter and setter
+  val: computed({
+    get: () => props.modelValue || '',
+    set: val => {
+      emit('update:modelValue', val)
+    }
+  }),
   error: false,
   message: ''
 })
@@ -53,7 +53,7 @@ const validateInput = () => {
           passed = emailReg.test(inputRef.val)
           break
         case 'password':
-          passed = rule.validator? rule.validator() : true
+          passed = rule.validator ? rule.validator() : true
           break
         default:
           break
@@ -76,17 +76,17 @@ defineExpose({ validateInput })
 
 // 阻止 $attrs 绑定到根元素
 defineOptions({
-  inheritAttrs: false, 
+  inheritAttrs: false,
 });
 </script>
 
 <template>
   <!--$attrs是一个特殊的属性，用于传递父组件传递给子组件的非 prop 属性 -->
   <div class="validate-input-container pb-3">
-    <input :value="inputRef.val" @input="updateValue" @blur="validateInput" v-bind="$attrs" class="form-control"
+    <input v-model="inputRef.val" @blur="validateInput" v-bind="$attrs" class="form-control"
       :class="{ 'is-invalid': inputRef.error }" v-if="tag !== 'textarea'">
-    <textarea v-else class="form-control" :class="{ 'is-invalid': inputRef.error }" :value="inputRef.val"
-      @blur="validateInput" @input="updateValue" v-bind="$attrs">
+    <textarea v-else class="form-control" :class="{ 'is-invalid': inputRef.error }" v-model="inputRef.val"
+      @blur="validateInput" v-bind="$attrs">
     </textarea>
     <span v-if="inputRef.error" class="invalid-feedback">{{ inputRef.message }}</span>
   </div>

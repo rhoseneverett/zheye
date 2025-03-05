@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import type { PropType } from 'vue'
 import type { ColumnProps } from '../store'
 import { addColumnAvatar } from '../helper'
+import { RouterLink } from 'vue-router'
 
 // 定义 props
 const props = defineProps({
@@ -33,9 +34,9 @@ const columnList = computed(() => {
           />
           <h5 class="card-title">{{ column.title }}</h5>
           <p class="card-text text-left">{{ column.description }}</p>
-          <router-link :to="`/column/${column._id}`" class="btn btn-outline-primary">
+          <RouterLink :to="`/column/${column._id}`" class="btn btn-outline-primary">
             进入专栏
-          </router-link>
+          </RouterLink>
         </div>
       </div>
     </div>

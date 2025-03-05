@@ -41,17 +41,12 @@ const uploadedError = (error:any) => {
           <img src="../assets/callout.svg" alt="callout" class="w-50" />
           <h2 class="font-weight-light">随心写作，自由表达</h2>
           <p>
-            <a href="#" class="btn btn-primary my-2">开始写文章</a>
+            <!-- <a href="#" class="btn btn-primary my-2">开始写文章</a> -->
+            <RouterLink to="/create" class="btn btn-primary my-2">开始写文章</RouterLink>
           </p>
         </div>
       </div>
     </section>
-    <Uploader action="/upload" :beforeUpload="beforeUpload" @file-uploaded="uploaded" @file-uploaded-error="uploadedError">
-      <!--插槽内容-->
-      <template #uploaded="dataProps">
-        <img :src="dataProps.uploadedData.data.url" width="500" />
-      </template>
-    </Uploader>
     <h4 class="font-weight-bold text-center">发现精彩</h4>
     <ColumnList :list="list" />
     <!-- <button

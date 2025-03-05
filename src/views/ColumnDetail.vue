@@ -10,7 +10,7 @@ import { type ColumnProps } from '../store'
 const store = useStore()
 // 获取当前路由
 const route = useRoute();
-// 解析路由参数中的 id
+// 解析路由参数中的 id : 67c5c15ab558154f0393456a
 const currentId = route.params.id;
 // 根据 id 查找对应的专栏信息
 const column = computed(() => {

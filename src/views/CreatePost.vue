@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import type { GlobalDataProps, PostProps, ResponseType, ImageProps, RuleProps } from '../store'
 import ValidateInput from '../components/ValidateInput.vue'
 import ValidateForm from '../components/ValidateForm.vue'
@@ -9,9 +9,31 @@ import Uploader from '../components/Uploader.vue'
 import createMessage from '../components/createMessage'
 import { beforeUploadCheck } from '../helper'
 
+
 const titleVal = ref('')
+
 const router = useRouter()
+
+const route = useRoute()
+const isEdit = !!route.query.id
+
+const uploadedData = ref()
+
 const store = useStore<GlobalDataProps>()
+
+onMounted(async () => {
+  if (isEdit) {
+    const rawData = await store.dispatch('fetchPost', route.query.id)
+    console.log(rawData)
+    const currentPost = rawData.data
+    if (currentPost.image) {
+      uploadedData.value = { data: currentPost.image }
+    }
+    titleVal.value = currentPost.title
+    contentVal.value = currentPost.content || ''
+  }
+})
+
 let imageId = ''
 const titleRules: RuleProps[] = [
   { type: 'required', message: '文章标题不能为空' }
@@ -38,7 +60,12 @@ const onFormSubmit = async (result: boolean) => {
       if (imageId) {
         newPost.image = imageId
       }
-      await store.dispatch('createPost', newPost)
+      const actionName = isEdit ? 'updatePost' : 'createPost'
+      const sendData = isEdit ? {
+        id: route.query.id,
+        payload: newPost
+      } : newPost
+      await store.dispatch(actionName, sendData)
       createMessage('发表成功，2秒后跳转到文章', 'success', 2000)
       setTimeout(() => {
         router.push({ name: 'column', params: { id: column } })
@@ -59,15 +86,15 @@ const uploadCheck = (file: File) => {
   return passed
 }
 
-const uploadedError = (error:any) => {
-  createMessage(`上传图片出现错误 ${error}`,'error')
+const uploadedError = (error: any) => {
+  createMessage(`上传图片出现错误 ${error}`, 'error')
 }
 </script>
 
 <template>
   <div class="create-post-page">
-    <h4>新建文章</h4>
-    <Uploader action="/upload"
+    <h3>{{ isEdit ? '更新文章' : '发表文章' }}</h3>
+    <Uploader action="/upload" :uploaded="uploadedData"
       class="d-flex align-items-center justify-content-center bg-light text-secondary w-100 my-4"
       :beforeUpload="uploadCheck" @file-uploaded="handleFileUploaded" @file-uploaded-error="uploadedError">
       <h2>点击上传图片</h2>
@@ -80,7 +107,7 @@ const uploadedError = (error:any) => {
         </div>
       </template>
       <template #uploaded="dataProps">
-        <img :src="dataProps.uploadedData.data.url">
+        <img :src="dataProps.uploadedData?.data.url">
       </template>
     </Uploader>
     <validate-form @form-submit="onFormSubmit">
@@ -94,7 +121,7 @@ const uploadedError = (error:any) => {
           v-model="contentVal" />
       </div>
       <template #submit>
-        <button class="btn btn-primary btn-large">创建</button>
+        <button class="btn btn-primary btn-large">{{ isEdit ? '更新文章' : '发表文章' }}</button>
       </template>
     </validate-form>
   </div>

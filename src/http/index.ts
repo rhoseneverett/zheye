@@ -13,7 +13,7 @@ const http = axios.create({
 // 请求拦截器
 http.interceptors.request.use((config) => {
   // 添加 icode 参数
-  if (config.method === 'get') {
+  if (config.method === 'get' || config.method === 'delete') {
     config.params = { ...config.params, icode: 'F026E6A4E6C4106F' };
   } else {
     if (config.data instanceof FormData) {

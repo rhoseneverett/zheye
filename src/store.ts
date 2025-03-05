@@ -20,7 +20,7 @@ export interface UserProps {
 export interface RuleProps {
   type: 'required' | 'password' | 'email';
   message: string;
-  validator?: ()=>boolean;
+  validator?: () => boolean;
 }
 
 export interface GlobalDataProps {
@@ -62,7 +62,7 @@ export interface GlobalErrorProps {
 
 const store = createStore<GlobalDataProps>({
   state: {
-    error:{ status: false },
+    error: { status: false },
     token: localStorage.getItem('token') || '',
     columns: [],
     posts: [],
@@ -101,7 +101,22 @@ const store = createStore<GlobalDataProps>({
       state.token = ''
       state.user = { isLogin: false }
       localStorage.removeItem('token')
-    }
+    },
+    fetchPost(state, rawData) {
+      state.posts = [rawData.data]
+    },
+    updatePost(state, { data }) {
+      state.posts = state.posts.map(post => {
+        if (post._id === data._id) {
+          return data
+        } else {
+          return post
+        }
+      })
+    },
+    deletePost(state, { data }) {
+      state.posts = state.posts.filter(post => post._id !== data._id)
+    },
   },
   actions: {
     async fetchColumns({ commit }) {
@@ -117,22 +132,38 @@ const store = createStore<GlobalDataProps>({
       const { data } = await http.get(`/columns/${cid}/posts`)
       commit('fetchPosts', data)
     },
-    async login ({ commit }, payload) {
-      const { data } = await http.post('/user/login', payload);
-      commit('login', data);
+    async login({ commit }, payload) {
+      const { data } = await http.post('/user/login', payload)
+      commit('login', data)
     },
-    async fetchCurrentUser ({ commit }) {
-      const { data } = await http.get('/user/current');
-      commit('fetchCurrentUser', data);
+    async fetchCurrentUser({ commit }) {
+      const { data } = await http.get('/user/current')
+      commit('fetchCurrentUser', data)
     },
-    async loginAndFetch ({ dispatch }, loginData) {
-      await dispatch('login', loginData); // 等待登录完成
-      await dispatch('fetchCurrentUser'); // 等待获取当前用户信息
+    async loginAndFetch({ dispatch }, loginData) {
+      await dispatch('login', loginData) // 等待登录完成
+      await dispatch('fetchCurrentUser') // 等待获取当前用户信息
     },
     async createPost({ commit }, payload) {
-      const { data } = await http.post('/posts',payload);
+      const { data } = await http.post('/posts', payload)
       commit('createPost', data);
     },
+    //必须返回值
+    async fetchPost({ commit }, id) {
+      const { data } = await http.get(`/posts/${id}`)
+      commit('fetchPost', data)
+      return data
+    },
+    async updatePost({ commit }, { id, payload }) {
+      const { data } = await http.patch(`/posts/${id}`, payload);
+      commit('updatePost', data);
+    },
+    async deletePost({ commit }, id){
+      const { data } = await http.delete(`/posts/${id}`)
+      console.log(data)
+      commit('deletePost', data)
+      return data
+    }
   },
   getters: {
     //错写===成=，未报错
@@ -141,7 +172,10 @@ const store = createStore<GlobalDataProps>({
     },
     getPostsByCid: (state) => (cid: string) => {
       return state.posts.filter(post => post.column === cid)
-    }
+    },
+    getCurrentPost: (state) => (id: string) => {
+      return state.posts.find(post => post._id === id)
+    },
   }
 })
 
