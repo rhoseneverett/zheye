@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
 import useDOMCreate from '../hooks/useDOMCreate';
 
 // 定义 props

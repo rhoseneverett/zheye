@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import type { UserProps } from '@/store';
 import Dropdown from './Dropdown.vue';
 import DropdownItem from './DropdownItem.vue';
 import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
 import createMessage from './createMessage';
+import { useUserStore, type UserDataProps } from '@/store/user';
+
 defineProps<{
-  user: UserProps
+  data: UserDataProps | null,
+  isLogin: Boolean
 }>()
 
 const router = useRouter()
-const store = useStore()
-
+const userStore = useUserStore()
 const logout = () => {
-  store.commit('logout')
+  userStore.logout()
   createMessage('退出登录成功', 'success',1000)
   setTimeout(() => {
     router.push('/')
@@ -24,7 +24,7 @@ const logout = () => {
 <template>
   <nav class="navbar navbar-dark bg-primary justify-content-between mb-4 px-4">
     <RouterLink to="/" class="navbar-brand">者也专栏</RouterLink>
-    <ul v-if="!user.isLogin" class="list-inline mb-0">
+    <ul v-if="!isLogin" class="list-inline mb-0">
       <li class="list-inline-item">
         <RouterLink to="/login" class="btn btn-outline-light my-2">登陆</RouterLink>
       </li>
@@ -32,14 +32,14 @@ const logout = () => {
         <RouterLink to="/signup" class="btn btn-outline-light my-2">注册</RouterLink>
       </li>
     </ul>
-    <ul v-else class="list-inline mb-0">
-      <Dropdown :title="`你好,${user.nickName}`">
+    <ul v-else-if="isLogin && data" class="list-inline mb-0">
+      <Dropdown :title="`你好,${data.nickName}`">
         <DropdownItem>
           <RouterLink to="/create" class="dropdown-item">新建文章</RouterLink>
         </DropdownItem>
         <DropdownItem><a href="" class="dropdown-item">编辑资料</a></DropdownItem>
         <DropdownItem>
-          <RouterLink :to="`/column/${user.column}`" class="dropdown-item">我的专栏</RouterLink>
+          <RouterLink :to="`/column/${data.column}`" class="dropdown-item">我的专栏</RouterLink>
         </DropdownItem>
         <DropdownItem><a href="#" class="dropdown-item" @click.prevent="logout">退出登陆</a></DropdownItem>
       </Dropdown>

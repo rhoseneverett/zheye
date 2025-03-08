@@ -1,31 +1,44 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import PostList from '../components/PostList.vue';
-import { useStore } from 'vuex';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { addColumnAvatar } from '../helper'
-import { type ColumnProps } from '../store'
+import { type ColumnProps } from '@/store/column'
+import { useColumnStore } from '@/store/column';
+import { useUserStore } from '@/store/user';
+import { usePostStore } from '@/store/post';
 
-
-const store = useStore()
+const columnStore = useColumnStore()
+const userStore = useUserStore()
+const postStore = usePostStore()
 // 获取当前路由
 const route = useRoute();
 // 解析路由参数中的 id : 67c5c15ab558154f0393456a
-const currentId = route.params.id;
+const currentId = ref(route.params.id as string)
 // 根据 id 查找对应的专栏信息
 const column = computed(() => {
-  const selectColumn = store.getters.getColumnById(currentId) as ColumnProps | undefined
+  const selectColumn = columnStore.getColumnById(currentId.value) as ColumnProps | undefined
   if (selectColumn) {
     addColumnAvatar(selectColumn, 100, 100)
   }
   return selectColumn
 })
 // 根据 id 过滤对应的文章列表
-const list = computed(() => store.getters.getPostsByCid(currentId))
+const list = computed(() => postStore.getPostsByCid(currentId.value))
 
 onMounted(() => {
-  store.dispatch('fetchColumn', currentId)
-  store.dispatch('fetchPosts', currentId)
+  columnStore.fetchColumn(currentId.value)
+  postStore.fetchPosts({ cid: currentId.value })
+})
+
+watch(() => route.params, (params) => {
+  const jumpId = params && params.id as string
+  const column = userStore.data?.column
+  if (jumpId && column && (jumpId === column)) {
+    columnStore.fetchColumn(jumpId)
+    postStore.fetchPosts({ cid: jumpId })
+    currentId.value = params.id as string
+  }
 })
 </script>
 
@@ -40,6 +53,6 @@ onMounted(() => {
         <p class="text-muted">{{ column.description }}</p>
       </div>
     </div>
-    <PostList :list="list" />
+    <PostList :list="list"/>
   </div>
 </template>

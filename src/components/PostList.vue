@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PostProps, ImageProps } from '../store'
+import type { PostProps } from '@/store/post'
+import type { ImageProps } from '@/store/utils';
 import { generateFitUrl } from '../helper'
 
 // 定义 props

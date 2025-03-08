@@ -4,10 +4,10 @@ import type { RuleProps } from '@/store';
 import ValidateForm from '../components/ValidateForm.vue';
 import ValidateInput from '../components/ValidateInput.vue';
 import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
 import createMessage from '@/components/createMessage';
+import { useUserStore } from '@/store/user';
 
-const store = useStore()
+const UserStore = useUserStore()
 
 const passwordVal = ref('')
 const passwordRules: RuleProps[] = [
@@ -26,11 +26,8 @@ const inputRef = ref<any>(null)
 const submit = async (result: boolean) => {
   console.log(result)
   if (result) {
-    const payload = {
-      email: emailVal.value,
-      password: passwordVal.value
-    }
-    await store.dispatch('loginAndFetch', payload)
+    await UserStore.login(emailVal.value,passwordVal.value)
+    await UserStore.fetchCurrentUser()
     createMessage('登录成功 1秒后跳转首页', 'success',1000)
     setTimeout(() => {
       router.push('/')

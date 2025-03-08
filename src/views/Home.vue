@@ -1,35 +1,20 @@
 <script setup lang="ts">
 import ColumnList from '../components/ColumnList.vue'
-import { useStore } from 'vuex';
 import { computed, onMounted } from 'vue';
-import Uploader from '@/components/Uploader.vue';
-import createMessage from '@/components/createMessage';
-import type { ResponseType, ImageProps } from '@/store';
+import { useColumnStore } from '@/store/column';
+import useLoadMore from '@/hooks/useLoadMore';
 
-const store = useStore()
-const list = computed(() => store.state.columns)
+const columnStore = useColumnStore()
 
+const list = computed(() => columnStore.getColumns)
+const total = computed(() => columnStore.total)
+const currentPage = computed(() => columnStore.currentPage)
 
 onMounted(() => {
-  store.dispatch('fetchColumns')
+  columnStore.fetchColumns({pageSize : 3})
 })
 
-const beforeUpload = (file: File) => {
-  const isJPG = file.type === 'image/jpeg'
-  if (!isJPG) {
-    createMessage('上传图片只能是 JPG 格式!', 'error')
-  }
-  return isJPG
-}
-
-const uploaded = (rawData:ResponseType<ImageProps>) => {
-  createMessage(`上传图片ID ${rawData.data._id}`,'success')
-}
-
-const uploadedError = (error:any) => {
-  createMessage(`上传图片出现错误 ${error}`,'error')
-}
-
+const {loadMorePage, isLastPage} = useLoadMore(columnStore,'fetchColumns',{currentPage,total})
 
 </script>
 
@@ -49,11 +34,9 @@ const uploadedError = (error:any) => {
     </section>
     <h4 class="font-weight-bold text-center">发现精彩</h4>
     <ColumnList :list="list" />
-    <!-- <button
-      class="btn btn-outline-primary mt-2 mb-5 mx-auto btn-block w-25 d-block"
-       @click="loadMorePage" v-if="!isLastPage"
-    >
+    <button class="btn btn-outline-primary mt-2 mb-5 mx-auto btn-block w-25 d-block"
+       @click="loadMorePage" v-if="!isLastPage">
       加载更多
-    </button> -->
+    </button>
   </div>
 </template>

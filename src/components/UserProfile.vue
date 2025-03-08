@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UserProps } from '../store'
+import type { UserDataProps } from '@/store/user'
 import { addColumnAvatar } from '../helper'
 
 // 定义 props
-const props = defineProps<{user:UserProps}>()
+const props = defineProps<{user:UserDataProps}>()
 
 // 计算用户头像的 URL
 const fitUrl = computed(() => {

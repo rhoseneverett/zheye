@@ -1,35 +1,39 @@
 <script setup lang="ts">
 import { onMounted, computed, ref } from 'vue'
 import MarkdownIt from 'markdown-it'
-import { useStore } from 'vuex'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
-import type { GlobalDataProps, PostProps, ImageProps, UserProps } from '../store'
+import { useRoute, useRouter } from 'vue-router'
+import type { ImageProps } from '@/store/utils'
+import { useUserStore } from '@/store/user'
 import UserProfile from '../components/UserProfile.vue'
 import Modal from '@/components/Modal.vue'
 import createMessage from '@/components/createMessage'
+import { usePostStore } from '@/store/post'
+import type { UserDataProps } from '@/store/user'
 
 // 获取 store 和 route
-const store = useStore<GlobalDataProps>()
 const route = useRoute()
-const currentId = route.params.id
-
+const currentId = route.params.id as string
+const postStore = usePostStore()
+const userStore = useUserStore()
 // 初始化 Markdown 解析器
 const md = new MarkdownIt()
 
 // 在组件挂载时获取文章数据
 onMounted(() => {
-  store.dispatch('fetchPost', currentId)
+  postStore.fetchPost(currentId)
 })
 
-// 计算当前文章
-const currentPost = computed<PostProps>(() => store.getters.getCurrentPost(currentId))
+// 获取当前文章
+const currentPost = computed(() => postStore.getCurrentPost(currentId))
 
 // 计算当前文章的 HTML 内容
 const currentHTML = computed(() => {
   if (currentPost.value && currentPost.value.content) {
+    console.log(currentPost.value)
     return md.render(currentPost.value.content)
+  }else{
+    return ''
   }
-  return ''
 })
 
 // 计算当前文章的图片 URL
@@ -42,10 +46,9 @@ const currentImageUrl = computed(() => {
 })
 
 const showEdit = computed(() => {
-  const { isLogin, _id } = store.state.user
-  if (currentPost.value && currentPost.value.author && isLogin) {
-    const postAuthor = currentPost.value.author as UserProps
-    return postAuthor._id === _id
+  if (currentPost.value && currentPost.value.author && userStore.isLogin) {
+    const postAuthor = currentPost.value.author as UserDataProps
+    return postAuthor._id === userStore.data?._id
   } else {
     return false
   }
@@ -54,12 +57,13 @@ const showEdit = computed(() => {
 const modalIsVisible = ref(false)
 
 const router = useRouter()
-const deletePost = async() => {
+const deletePost = async () => {
   modalIsVisible.value = false
-  const rawData = await store.dispatch('deletePost', currentId)
+  const rawData = await postStore.deletePost(currentId)
+  console.log(rawData)
   createMessage('删除成功，2秒后跳转到专栏首页', 'success', 2000)
   setTimeout(() => {
-    router.push({ name: 'column', params: { id: rawData.data.column } })
+    router.push({ name: 'column', params: { id: rawData.column } })
   }, 2000)
 
 }
@@ -67,7 +71,8 @@ const deletePost = async() => {
 
 <template>
   <div class="post-detail-page">
-    <Modal title="删除文章" :visible="modalIsVisible" @modal-on-close="modalIsVisible = false" @modal-on-confirm="deletePost">
+    <Modal title="删除文章" :visible="modalIsVisible" @modal-on-close="modalIsVisible = false"
+      @modal-on-confirm="deletePost">
       <p>确定要删除这篇文章吗？</p>
     </Modal>
     <article class="w-75 mx-auto mb-5 pb-3" v-if="currentPost">
@@ -75,7 +80,7 @@ const deletePost = async() => {
       <h2 class="mb-4">{{ currentPost.title }}</h2>
       <div class="user-profile-component border-top border-bottom py-3 mb-5 align-items-center row g-0">
         <div class="col">
-          <user-profile :user="currentPost.author" v-if="typeof currentPost.author === 'object'"></user-profile>
+          <UserProfile :user="currentPost.author" v-if="typeof currentPost.author === 'object'"></UserProfile>
         </div>
         <span class="text-muted col text-right font-italic">发表于：{{ currentPost.createdAt }}</span>
       </div>

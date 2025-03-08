@@ -1,4 +1,6 @@
-import type { ColumnProps, ImageProps, UserProps } from './store'
+import type { UserDataProps } from '@/store/user'
+import type { ColumnProps } from './store/column';
+import type { ImageProps } from './store/utils';
 import columnImage from '@/assets/column.jpg';
 import avtImage from '@/assets/avatar.jpg';
 
@@ -11,7 +13,7 @@ export function generateFitUrl(data: ImageProps, width: number, height: number, 
   }
 }
 
-export function addColumnAvatar(data: ColumnProps | UserProps, width: number, height: number) {
+export function addColumnAvatar(data: ColumnProps | UserDataProps, width: number, height: number) {
   if (data.avatar) {
     generateFitUrl(data.avatar, width, height)
   } else {

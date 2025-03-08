@@ -5,8 +5,7 @@ import Signup from './views/Signup.vue'
 import ColumnDetail from './views/ColumnDetail.vue'
 import CreatePost from './views/CreatePost.vue'
 import PostDetail from './views/PostDetail.vue'
-import store from './store'
-import http from './http'
+import { useUserStore } from './store/user'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -48,13 +47,13 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const { user, token } = store.state
+  const userStore = useUserStore()
+  const { token, isLogin} = userStore
   const { requiredLogin, redirectAlreadyLogin } = to.meta
-  if (!user.isLogin) {
+  if (!isLogin) {
     if (token) {
-      // http.defaults.headers.common.Authorization = `Bearer ${token}`
       try {
-        await store.dispatch('fetchCurrentUser')
+        await userStore.fetchCurrentUser()
         if (redirectAlreadyLogin) {
           next('/')
         } else {
@@ -62,7 +61,7 @@ router.beforeEach(async (to, from, next) => {
         }
       } catch (e) {
         console.error(e)
-        localStorage.removeItem('token')
+        userStore.logout()
         next('login')
       }
     } else {

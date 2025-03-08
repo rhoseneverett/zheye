@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { PropType } from 'vue'
-import type { ColumnProps } from '../store'
+import type { ColumnProps } from '@/store/column'
 import { addColumnAvatar } from '../helper'
 import { RouterLink } from 'vue-router'
 

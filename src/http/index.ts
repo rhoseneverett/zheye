@@ -1,5 +1,6 @@
 import axios from 'axios';
-import store from '@/store'; // 引入 Vuex store
+import { useGlobalStore } from '@/store/global';
+import { useUserStore } from '@/store/user';
 
 // 创建 Axios 实例
 const http = axios.create({
@@ -22,12 +23,16 @@ http.interceptors.request.use((config) => {
       config.data = { ...config.data, icode: 'F026E6A4E6C4106F' };
     }
   }
-  if(store.state.token){
-    config.headers.Authorization = `Bearer ${store.state.token}`;
+  const userStore = useUserStore();
+  if (userStore.token) {
+    config.headers.Authorization = `Bearer ${userStore.token}`;
   }
   // 开启全局 loading
-  store.commit('setLoading', true);
-  store.commit('setError', { status: false, message: '' })
+  // store.commit('setLoading', true);
+  // store.commit('setError', { status: false, message: '' })
+  const globalStore = useGlobalStore();
+  globalStore.setLoading(true)
+  globalStore.setError({ status: false, message: '' })
   return config;
 });
 
@@ -35,13 +40,18 @@ http.interceptors.request.use((config) => {
 http.interceptors.response.use(
   (response) => {
     // 关闭全局 loading
-    store.commit('setLoading', false);
+    // store.commit('setLoading', false);
+    const globalStore = useGlobalStore();
+    globalStore.loading = false
     return response;
   },
   (e) => {
     const { error } = e.response.data
-    store.commit('setError', { status: true, message: error })
-    store.commit('setLoading', false);
+    // store.commit('setError', { status: true, message: error })
+    // store.commit('setLoading', false);
+    const globalStore = useGlobalStore();
+    globalStore.loading = false
+    globalStore.setError({ status: true, message: error })
     return Promise.reject(error);
   }
 );

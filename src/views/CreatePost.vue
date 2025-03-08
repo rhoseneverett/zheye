@@ -1,31 +1,31 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
-import type { GlobalDataProps, PostProps, ResponseType, ImageProps, RuleProps } from '../store'
+import type { PostProps, ResponseType, ImageProps, RuleProps } from '../store'
 import ValidateInput from '../components/ValidateInput.vue'
 import ValidateForm from '../components/ValidateForm.vue'
 import Uploader from '../components/Uploader.vue'
 import createMessage from '../components/createMessage'
 import { beforeUploadCheck } from '../helper'
+import { usePostStore } from '@/store/post'
+import { useUserStore } from '../store/user'
 
 
 const titleVal = ref('')
+const postStore = usePostStore()
+const userStore = useUserStore()
 
 const router = useRouter()
-
 const route = useRoute()
 const isEdit = !!route.query.id
 
 const uploadedData = ref()
 
-const store = useStore<GlobalDataProps>()
+const postId = route.query.id as string
 
 onMounted(async () => {
   if (isEdit) {
-    const rawData = await store.dispatch('fetchPost', route.query.id)
-    console.log(rawData)
-    const currentPost = rawData.data
+    const currentPost = await postStore.fetchPost(postId)
     if (currentPost.image) {
       uploadedData.value = { data: currentPost.image }
     }
@@ -49,7 +49,7 @@ const handleFileUploaded = (rawData: ResponseType<ImageProps>) => {
 }
 const onFormSubmit = async (result: boolean) => {
   if (result) {
-    const { column, _id } = store.state.user
+    const { column, _id } = userStore.data!
     if (column) {
       const newPost: PostProps = {
         title: titleVal.value,
@@ -60,12 +60,11 @@ const onFormSubmit = async (result: boolean) => {
       if (imageId) {
         newPost.image = imageId
       }
-      const actionName = isEdit ? 'updatePost' : 'createPost'
-      const sendData = isEdit ? {
-        id: route.query.id,
-        payload: newPost
-      } : newPost
-      await store.dispatch(actionName, sendData)
+      if (isEdit) {
+        await postStore.updatePost(postId, newPost)
+      } else {
+        await postStore.createPost(newPost)
+      }
       createMessage('发表成功，2秒后跳转到文章', 'success', 2000)
       setTimeout(() => {
         router.push({ name: 'column', params: { id: column } })

@@ -1,24 +1,19 @@
 <script setup lang="ts">
 import 'bootstrap/dist/css/bootstrap.min.css'
 import GlobalHeader from './components/GlobalHeader.vue';
-import { useStore } from 'vuex';
-import { computed, onMounted, watch } from 'vue';
+import { computed, watch } from 'vue';
 import Loader from './components/Loader.vue';
-import { type GlobalDataProps } from './store'
 import createMessage from './components/createMessage'
+import { useGlobalStore } from './store/global';
+import { useUserStore } from './store/user';
 
-const isLoading = computed(() => store.state.loading)
-const store = useStore<GlobalDataProps>()
-const currentUser = computed(() => store.state.user)
-const token = computed(() => store.state.token)
-const error = computed(() => store.state.error)
+const globalStore = useGlobalStore()
+const userStore = useUserStore()
 
-// onMounted(() => {
-//   if (!currentUser.value.isLogin && token.value) {
-//     // http.defaults.headers.common.Authorization = `Bearer ${token.value}`
-//     store.dispatch('fetchCurrentUser')
-//   }
-// })
+const isLoading = computed(() => globalStore.loading)
+const currentUser = computed(() => userStore.data)
+const isLogin = computed(() => userStore.isLogin)
+const error = computed(() => globalStore.error)
 
 watch(() => error.value.status, () => {
   const { status, message } = error.value
@@ -31,7 +26,7 @@ watch(() => error.value.status, () => {
 
 <template>
   <div class="container">
-    <GlobalHeader :user="currentUser" />
+    <GlobalHeader :data="currentUser" :is-login="isLogin" />
     <Loader v-if="isLoading" text="拼命加载中" background="rgba(0,0,0, 0.8)" />
     <RouterView />
     <footer class="text-center py-4 text-secondary bg-light mt-6">
@@ -47,5 +42,3 @@ watch(() => error.value.status, () => {
     </footer>
   </div>
 </template>
-
-<style scoped></style>

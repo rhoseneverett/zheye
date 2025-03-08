@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { ref, useAttrs, watch } from 'vue';
+import { ref, watch } from 'vue';
 import http from '@/http';
 
 
