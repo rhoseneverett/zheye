@@ -16,34 +16,57 @@ export interface PostProps {
 }
 
 export interface GlobalPostsProps {
-  data: PostProps[]; // 直接使用数组存储文章数据
+  data: PostProps[];
+  currentPage: number;
+  total: number;
+  cid: string
 }
 
 export const usePostStore = defineStore('post', {
   state: (): GlobalPostsProps => ({
     data: [],
+    currentPage: 0,
+    total: 0,
+    cid: ''
   }),
   actions: {
+    // async fetchPosts(params: ListReqType = {}) {
+    //   const { cid = '', currentPage = 1, pageSize = 5 } = params;
+    //   const { data } = await http.get( `/columns/${cid}/posts?currentPage=${currentPage}&pageSize=${pageSize}` );
+    //   const { list } = data.data;
+    //   if (currentPage === 1) {
+    //     this.data = list;
+    //   } else {
+    //     this.data = [...this.data, ...list];
+    //   }
+    //   console.log(data)
+    // },
     async fetchPosts(params: ListReqType = {}) {
-      const { cid = '', currentPage = 1, pageSize = 5 } = params;
-      const { data } = await http.get( `/columns/${cid}/posts?currentPage=${currentPage}&pageSize=${pageSize}` );
-      const { list } = data.data;
-      if (currentPage === 1) {
-        this.data = list;
-      } else {
-        this.data = [...this.data, ...list];
+      console.log(1)
+      const { cid = '', currentPage = 1, pageSize = 3 } = params;
+      if (this.currentPage < currentPage || this.cid !== cid) {
+        const { data } = await http.get(`/columns/${cid}/posts?currentPage=${currentPage}&pageSize=${pageSize}`);
+        const { count, list } = data.data;
+        if (cid !== this.cid) {
+          this.$patch({
+            currentPage,
+            total: count,
+            data: [...list],
+            cid: cid
+          });
+        } else {
+          this.$patch({
+            currentPage,
+            total: count,
+            data: [...this.data, ...list],
+          });
+        }
+        console.log(cid,currentPage,pageSize,this.total)
       }
     },
     async fetchPost(id: string) {
-      const certainPost = this.data.find((post) => post._id === id);
-      if (!certainPost) {
-        const { data: rawData } = await http.get(`/posts/${id}`);
-        const { data } = rawData;
-        this.data.push(data);
-        return data;
-      } else {
-        return certainPost;
-      }
+      const { data: rawData } = await http.get(`/posts/${id}`);
+      return rawData.data
     },
     async updatePost(id: string, payload: PostProps) {
       const { data: rawData } = await http.patch(`/posts/${id}`, payload);
@@ -66,8 +89,8 @@ export const usePostStore = defineStore('post', {
     },
   },
   getters: {
-    getCurrentPost: (state) => (id: string) => {
-      return state.data.find((post) => post._id === id);
+    getPosts: (state) => (cid: string) => {
+      return state.data
     },
     getPostsByCid: (state) => (cid: string) => {
       return state.data

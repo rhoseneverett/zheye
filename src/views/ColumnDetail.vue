@@ -5,11 +5,10 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { addColumnAvatar } from '../helper'
 import { type ColumnProps } from '@/store/column'
 import { useColumnStore } from '@/store/column';
-import { useUserStore } from '@/store/user';
 import { usePostStore } from '@/store/post';
+import useLoadMore from '@/hooks/useLoadMore';
 
 const columnStore = useColumnStore()
-const userStore = useUserStore()
 const postStore = usePostStore()
 // 获取当前路由
 const route = useRoute();
@@ -32,14 +31,16 @@ onMounted(() => {
 })
 
 watch(() => route.params, (params) => {
+  // 检测路由params,如果变更重新发送请求
   const jumpId = params && params.id as string
-  const column = userStore.data?.column
-  if (jumpId && column && (jumpId === column)) {
-    columnStore.fetchColumn(jumpId)
-    postStore.fetchPosts({ cid: jumpId })
-    currentId.value = params.id as string
-  }
+  columnStore.fetchColumn(jumpId)
+  postStore.fetchPosts({ cid: jumpId })
+  currentId.value = params.id as string
 })
+
+const total = computed(() => postStore.total)
+const currentPage = computed(() => postStore.currentPage)
+const {loadMorePage, isLastPage} = useLoadMore(postStore,'fetchPosts',{currentPage,total,cid: currentId.value})
 </script>
 
 <template>
@@ -54,5 +55,9 @@ watch(() => route.params, (params) => {
       </div>
     </div>
     <PostList :list="list"/>
+    <button class="btn btn-outline-primary mt-2 mb-5 mx-auto btn-block w-25 d-block"
+       @click="loadMorePage" v-if="!isLastPage">
+      加载更多
+    </button>
   </div>
 </template>

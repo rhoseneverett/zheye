@@ -14,7 +14,7 @@ onMounted(() => {
   columnStore.fetchColumns({pageSize : 3})
 })
 
-const {loadMorePage, isLastPage} = useLoadMore(columnStore,'fetchColumns',{currentPage,total})
+let {loadMorePage, isLastPage} = useLoadMore(columnStore,'fetchColumns',{currentPage,total})
 
 </script>
 

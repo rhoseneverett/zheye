@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import type { PostProps } from '@/store/post'
 import type { ImageProps } from '@/store/utils';
 import { generateFitUrl } from '../helper'
+import { RouterLink } from 'vue-router';
 
 // 定义 props
 const props = defineProps<{list:PostProps[]}>()
@@ -23,7 +24,7 @@ const posts = computed(() => {
     <article v-for="post in posts" :key="post._id" class="card mb-3 shadow-sm">
       <div class="card-body">
         <h4>
-          <router-link :to="`/posts/${post._id}/`">{{ post.title }}</router-link>
+          <RouterLink :to="`/posts/${post._id}/`">{{ post.title }}</RouterLink>
         </h4>
         <div class="row my-3 align-items-center">
           <div v-if="post.image" class="col-4">

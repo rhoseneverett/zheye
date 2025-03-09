@@ -28,7 +28,7 @@ watch(outside, () => {
 <template>
   <div class="dropdown" ref="myElement">
     <a @click.prevent="open" class="btn btn-outline-light my-2">{{ title }}</a>
-    <ul class="dropdown-menu" :style="{ display: 'block' }" v-if="isOpen">
+    <ul class="dropdown-menu" :style="{ display: 'block' }" v-if="isOpen" @click="open">
       <slot></slot>
     </ul>
   </div>

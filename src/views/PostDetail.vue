@@ -9,28 +9,26 @@ import Modal from '@/components/Modal.vue'
 import createMessage from '@/components/createMessage'
 import { usePostStore } from '@/store/post'
 import type { UserDataProps } from '@/store/user'
-
+import type { PostProps} from '@/store/post'
 // 获取 store 和 route
 const route = useRoute()
 const currentId = route.params.id as string
 const postStore = usePostStore()
 const userStore = useUserStore()
+
 // 初始化 Markdown 解析器
 const md = new MarkdownIt()
+const currentPost = ref<PostProps | null>(null);
 
 // 在组件挂载时获取文章数据
-onMounted(() => {
-  postStore.fetchPost(currentId)
+onMounted(async () => {
+  currentPost.value = await postStore.fetchPost(currentId)
 })
-
-// 获取当前文章
-const currentPost = computed(() => postStore.getCurrentPost(currentId))
 
 // 计算当前文章的 HTML 内容
 const currentHTML = computed(() => {
-  if (currentPost.value && currentPost.value.content) {
-    console.log(currentPost.value)
-    return md.render(currentPost.value.content)
+  if (currentPost.value && currentPost.value.excerpt) {
+    return md.render(currentPost.value.excerpt)
   }else{
     return ''
   }
@@ -54,13 +52,13 @@ const showEdit = computed(() => {
   }
 })
 
+
 const modalIsVisible = ref(false)
 
 const router = useRouter()
 const deletePost = async () => {
   modalIsVisible.value = false
   const rawData = await postStore.deletePost(currentId)
-  console.log(rawData)
   createMessage('删除成功，2秒后跳转到专栏首页', 'success', 2000)
   setTimeout(() => {
     router.push({ name: 'column', params: { id: rawData.column } })

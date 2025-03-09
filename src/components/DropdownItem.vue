@@ -1,7 +1,5 @@
 <script setup lang="ts">
-// withDefaults(defineProps<{
-//   disabled:boolean
-// }>(),{disabled:false})
+
 defineProps({
   disabled:{
     type:Boolean,

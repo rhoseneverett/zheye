@@ -27,7 +27,6 @@ export const useColumnStore = defineStore('column', {
       if (this.currentPage < currentPage) {
         const { data } = await http.get(`/columns?currentPage=${currentPage}&pageSize=${pageSize}`);
         const { count, list } = data.data;
-
         //更新state
         this.$patch({
           currentPage,

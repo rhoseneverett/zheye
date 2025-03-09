@@ -37,7 +37,6 @@ const logout = () => {
         <DropdownItem>
           <RouterLink to="/create" class="dropdown-item">新建文章</RouterLink>
         </DropdownItem>
-        <DropdownItem><a href="" class="dropdown-item">编辑资料</a></DropdownItem>
         <DropdownItem>
           <RouterLink :to="`/column/${data.column}`" class="dropdown-item">我的专栏</RouterLink>
         </DropdownItem>

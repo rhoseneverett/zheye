@@ -5,7 +5,6 @@ import { addColumnAvatar } from '../helper'
 
 // 定义 props
 const props = defineProps<{user:UserDataProps}>()
-
 // 计算用户头像的 URL
 const fitUrl = computed(() => {
   addColumnAvatar(props.user, 50, 50)

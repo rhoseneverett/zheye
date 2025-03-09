@@ -23,6 +23,7 @@ const useLoadMore = (store: Store<string, any>, actionName: string, options: Loa
     store[actionName](requestParams.value)
   }
   const isLastPage = computed(() => {
+    if(total.value === 0) return true
     return Math.ceil(total.value / pageSize) === currentPage.value
   })
   return {
