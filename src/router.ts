@@ -8,7 +8,7 @@ import PostDetail from './views/PostDetail.vue'
 import { useUserStore } from './store/user'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
