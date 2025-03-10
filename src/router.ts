@@ -13,42 +13,42 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      // component: Home
-      component: () => import('@/views/Home.vue')
+      component: Home
+      // component: () => import('@/views/Home.vue')
     },
     {
       path: '/login',
       name: 'login',
-      // component: Login,
-      component: () => import('@/views/Login.vue'),
+      component: Login,
+      // component: () => import('@/views/Login.vue'),
       meta: { redirectAlreadyLogin: true }
     },
     {
       path: '/signup',
       name: 'signup',
-      // component: Signup,
-      component: () => import('@/views/Signup.vue'),
+      component: Signup,
+      // component: () => import('@/views/Signup.vue'),
       meta: { redirectAlreadyLogin: true }
     },
     {
       path: '/create',
       name: 'create',
-      // component: CreatePost,
-      component: () => import('@/views/CreatePost.vue'),
+      component: CreatePost,
+      // component: () => import('@/views/CreatePost.vue'),
       meta: { requiredLogin: true }
     },
     {
       path: '/column/:id',
       name: 'column',
-      // component: ColumnDetail
-      component: () => import('@/views/ColumnDetail.vue'),
+      component: ColumnDetail
+      // component: () => import('@/views/ColumnDetail.vue'),
 
     },
     {
       path: '/posts/:id',
       name: 'post',
-      // component: PostDetail
-      component: () => import('@/views/PostDetail.vue'),
+      component: PostDetail
+      // component: () => import('@/views/PostDetail.vue'),
 
     }
   ]
