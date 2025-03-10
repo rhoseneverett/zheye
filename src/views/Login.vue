@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { RuleProps } from '@/store';
+import type { RuleProps } from '@/store/utils';
 import ValidateForm from '../components/ValidateForm.vue';
 import ValidateInput from '../components/ValidateInput.vue';
 import { useRouter } from 'vue-router';
@@ -9,13 +9,13 @@ import { useUserStore } from '@/store/user';
 
 const UserStore = useUserStore()
 
-const passwordVal = ref('')
+const passwordVal = ref('111111')
 const passwordRules: RuleProps[] = [
   { type: 'required', message: '密码不能为空' },
   { type: 'password', message: '请输入数字和字母组合的8-16位密码' }
 ]
 
-const emailVal = ref('')
+const emailVal = ref('1453477168@qq.com')
 const emailRules: RuleProps[] = [
   { type: 'required', message: '电子邮箱不能为空' },
   { type: 'email', message: '邮箱格式不符合要求' }

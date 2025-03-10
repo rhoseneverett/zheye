@@ -1,73 +1,62 @@
-<script lang="ts">
-import { defineComponent, reactive } from 'vue'
+<script setup lang="ts">
+import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import http from '@/http'
 import ValidateInput from '../components/ValidateInput.vue'
-import { type RuleProps } from '@/store'
+import type { RuleProps } from '@/store/utils'
 import ValidateForm from '../components/ValidateForm.vue'
 import createMessage from '../components/createMessage'
 
-export default defineComponent({
-  name: 'Signup',
-  components: {
-    ValidateInput,
-    ValidateForm
-  },
-  setup() {
-    const formData = reactive({
-      email: '',
-      nickName: '',
-      password: '',
-      repeatPassword: ''
-    })
-    const router = useRouter()
-    const emailRules: RuleProps[] = [
-      { type: 'required', message: '电子邮箱地址不能为空' },
-      { type: 'email', message: '请输入正确的电子邮箱格式' }
-    ]
-    const nameRules: RuleProps[] = [
-      { type: 'required', message: '昵称不能为空' }
-    ]
-    const passwordRules: RuleProps[] = [
-      { type: 'required', message: '密码不能为空' }
-    ]
-    const repeatPasswordRules: RuleProps[] = [
-      { type: 'required', message: '重复密码不能为空' },
-      {
-        type: 'password',
-        validator: () => {
-          return formData.password === formData.repeatPassword
-        },
-        message: '密码不相同'
-      }
-    ]
-    const onFormSubmit = (result: boolean) => {
-      if (result) {
-        const payload = {
-          email: formData.email,
-          password: formData.password,
-          nickName: formData.nickName
-        }
-        http.post('/users/', payload).then(data => {
-          createMessage('注册成功 正在跳转登录页面', 'success', 2000)
-          setTimeout(() => {
-            router.push('/login')
-          }, 2000)
-        }).catch(e => {
-          console.log(e)
-        })
-      }
-    }
-    return {
-      emailRules,
-      nameRules,
-      passwordRules,
-      repeatPasswordRules,
-      onFormSubmit,
-      formData
-    }
-  }
+const formData = reactive({
+  email: '',
+  nickName: '',
+  password: '',
+  repeatPassword: ''
 })
+
+const router = useRouter()
+
+const emailRules: RuleProps[] = [
+  { type: 'required', message: '电子邮箱地址不能为空' },
+  { type: 'email', message: '请输入正确的电子邮箱格式' }
+]
+
+const nameRules: RuleProps[] = [
+  { type: 'required', message: '昵称不能为空' }
+]
+
+const passwordRules: RuleProps[] = [
+  { type: 'required', message: '密码不能为空' }
+]
+
+const repeatPasswordRules: RuleProps[] = [
+  { type: 'required', message: '重复密码不能为空' },
+  {
+    type: 'password',
+    validator: () => {
+      return formData.password === formData.repeatPassword
+    },
+    message: '密码不相同'
+  }
+]
+
+const onFormSubmit = (result: boolean) => {
+  if (result) {
+    const payload = {
+      email: formData.email,
+      password: formData.password,
+      nickName: formData.nickName
+    }
+    http.post('/users/', payload).then(data => {
+      createMessage('注册成功 正在跳转登录页面', 'success', 2000)
+      setTimeout(() => {
+        router.push('/login')
+      }, 2000)
+    }).catch(e => {
+      console.log(e)
+    })
+  }
+}
 </script>
 
 <template>

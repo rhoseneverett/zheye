@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import type { PostProps, ResponseType, ImageProps, RuleProps } from '../store'
+import type { PostProps} from '@/store/post'
+import type { ResponseType, RuleProps, ImageProps } from '@/store/utils'
 import ValidateInput from '../components/ValidateInput.vue'
 import ValidateForm from '../components/ValidateForm.vue'
 import Uploader from '../components/Uploader.vue'

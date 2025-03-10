@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import useDOMCreate from '@/hooks/useDOMCreate';
 
 defineProps<{
   text: string; // 正确
   background: string;
 }>();
 
-useDOMCreate('back')
 </script>
 
 <template>
-  <!-- <teleport to="#back"> -->
   <div class="d-flex justify-content-center align-items-center h-100 w-100 loading-container"
     :style="{ backgroundColor: background || '' }">
     <div class="loading-content">
@@ -20,7 +17,6 @@ useDOMCreate('back')
       <p v-if="text" class="text-primary small">{{ text }}</p>
     </div>
   </div>
-  <!-- </teleport> -->
 </template>
 
 <style>

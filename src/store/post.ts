@@ -30,19 +30,8 @@ export const usePostStore = defineStore('post', {
     cid: ''
   }),
   actions: {
-    // async fetchPosts(params: ListReqType = {}) {
-    //   const { cid = '', currentPage = 1, pageSize = 5 } = params;
-    //   const { data } = await http.get( `/columns/${cid}/posts?currentPage=${currentPage}&pageSize=${pageSize}` );
-    //   const { list } = data.data;
-    //   if (currentPage === 1) {
-    //     this.data = list;
-    //   } else {
-    //     this.data = [...this.data, ...list];
-    //   }
-    //   console.log(data)
-    // },
+    // 缓存优化 重新进入页面无需重新发送请求
     async fetchPosts(params: ListReqType = {}) {
-      console.log(1)
       const { cid = '', currentPage = 1, pageSize = 3 } = params;
       if (this.currentPage < currentPage || this.cid !== cid) {
         const { data } = await http.get(`/columns/${cid}/posts?currentPage=${currentPage}&pageSize=${pageSize}`);
@@ -61,8 +50,8 @@ export const usePostStore = defineStore('post', {
             data: [...this.data, ...list],
           });
         }
-        console.log(cid,currentPage,pageSize,this.total)
       }
+      console.log('fetchPosts')
     },
     async fetchPost(id: string) {
       const { data: rawData } = await http.get(`/posts/${id}`);

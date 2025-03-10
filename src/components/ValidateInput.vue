@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive } from 'vue';
-import type { RuleProps } from '@/store';
+import type { RuleProps } from '@/store/utils';
 import { eventBus } from '@/mitt';
 
 type TagType = 'input' | 'textarea'

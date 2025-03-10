@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import PostList from '../components/PostList.vue';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { addColumnAvatar } from '../helper'
 import { type ColumnProps } from '@/store/column'
 import { useColumnStore } from '@/store/column';

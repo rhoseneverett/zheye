@@ -11,6 +11,12 @@ export interface ResponseType<P = Record<string, never>> {
   data: P;
 }
 
+export interface RuleProps {
+  type: 'required' | 'password' | 'email';
+  message: string;
+  validator?: () => boolean;
+}
+
 export interface ListDictType<P> {
   [id: string]: P;
 }

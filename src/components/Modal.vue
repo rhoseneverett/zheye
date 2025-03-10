@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import useDOMCreate from '../hooks/useDOMCreate';
 
-// 定义 props
 const props = defineProps({
   title: String,
   visible: {
@@ -9,19 +8,15 @@ const props = defineProps({
     default: false,
   },
 });
-
-// 定义 emits
 const emit = defineEmits(['modal-on-close', 'modal-on-confirm']);
 
-// 调用自定义 hook
+
 useDOMCreate('modal');
 
-// 关闭模态框
 const onClose = () => {
   emit('modal-on-close');
 };
 
-// 确认操作
 const onConfirm = () => {
   emit('modal-on-confirm');
 };
