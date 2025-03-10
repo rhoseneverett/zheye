@@ -4,7 +4,7 @@ import { useUserStore } from '@/store/user';
 
 // 创建 Axios 实例
 const http = axios.create({
-  baseURL: 'http://apis.imooc.com/api/', // 设置默认的 baseURL
+  baseURL: 'https://apis.imooc.com/api/', // 设置默认的 baseURL
 });
 
 // if(store.state.token){
