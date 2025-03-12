@@ -40,6 +40,9 @@ const logout = () => {
         <DropdownItem>
           <RouterLink :to="`/column/${data.column}`" class="dropdown-item">我的专栏</RouterLink>
         </DropdownItem>
+        <DropdownItem :disabled="true" >
+          <a href="#" class="dropdown-item">编辑资料</a>
+        </DropdownItem>
         <DropdownItem><a href="#" class="dropdown-item" @click.prevent="logout">退出登陆</a></DropdownItem>
       </Dropdown>
     </ul>
