@@ -15,12 +15,12 @@ const http = axios.create({
 http.interceptors.request.use((config) => {
   // 添加 icode 参数
   if (config.method === 'get' || config.method === 'delete') {
-    config.params = { ...config.params, icode: 'F026E6A4E6C4106F' };
+    config.params = { ...config.params, icode: 'DC6A0C8FF186884D' };
   } else {
     if (config.data instanceof FormData) {
-      config.data.append('icode', 'F026E6A4E6C4106F');
+      config.data.append('icode', 'DC6A0C8FF186884D');
     } else {
-      config.data = { ...config.data, icode: 'F026E6A4E6C4106F' };
+      config.data = { ...config.data, icode: 'DC6A0C8FF186884D' };
     }
   }
   const userStore = useUserStore();

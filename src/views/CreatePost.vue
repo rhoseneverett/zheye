@@ -106,6 +106,7 @@ const uploadedError = (error: any) => {
           <h2>正在上传</h2>
         </div>
       </template>
+      <!--作用域插槽 -->
       <template #uploaded="dataProps">
         <img :src="dataProps.uploadedData?.data.url">
       </template>

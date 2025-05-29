@@ -30,6 +30,7 @@ export const useUserStore = defineStore('user', {
         password
       }
       const { data } = await http.post<ResponseType>('/user/login', payload)
+      console.log(data)
       const { token } = data.data
       this.token = token
       localStorage.setItem('token', token)
